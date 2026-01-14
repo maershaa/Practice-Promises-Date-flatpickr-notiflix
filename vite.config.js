@@ -2,6 +2,8 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
+  base: '/Practice-Promises-Date-flatpickr-notiflix/',
+
   build: {
     rollupOptions: {
       input: {
