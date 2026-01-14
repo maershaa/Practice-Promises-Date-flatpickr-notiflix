@@ -103,6 +103,8 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
+  base: '/Practice-Promises-Date-flatpickr-notiflix/',
+
   build: {
     rollupOptions: {
       input: {
@@ -175,6 +177,47 @@ npm run deploy
 
 - **main** — исходники проекта + vite.config.js + npm-библиотеки.
 - **gh-pages** — только готовая сборка (dist).
+
+Да, точно! Ты правильно поняла. Вот **корректный пошаговый алгоритм для внесения
+изменений после того, как проект уже настроен с main и gh-pages**:
+
+---
+
+## Алгоритм внесения изменений и обновления сайта
+
+**Переключаемся на ветку main** (если ещё не на ней):
+
+```bash
+git checkout main
+```
+
+**Вносим изменения в проект**
+
+- HTML, JS, CSS, npm-библиотеки, src/ и т.д.
+
+**Проверяем статус Git и делаем коммит**:
+
+```bash
+git status
+
+git add .
+
+git commit -m "feat: описание изменений"
+
+git push origin main
+
+```
+
+**Собираем проект с Vite**:
+
+```bash
+npm run build
+* dist/ теперь содержит обновлённую сборку с актуальными путями, включая `base`, если он указан.
+
+npm run deploy
+* Ветка gh-pages обновится автоматически.
+* Сайт на GitHub Pages сразу будет показывать новые файлы, включая JS и CSS без 404.
+```
 
 ### Пример коммитов:
 
