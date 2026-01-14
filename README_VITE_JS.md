@@ -8,116 +8,222 @@
 
 ---
 
-## 1. Проверка Node.js
+## Проверка Node.js
 
 Убедись, что Node.js установлен: node --version
 
 ---
 
-## 2. Создание проекта (в новой папке)
-
-npm create vite@latest
-
-- **Project name** — укажи имя проекта (например, `my-app`) или `.` Если `.` -
-  Vite создаст шаблон в текущей директории, не создавая новую папку. Это удобно,
-  если ты уже находишься в пустой папке и хочешь инициализировать проект прямо в
-  ней.
-
-- **Select a framework** — выбери `vanilla`.
-
-- **Select a variant** — выбери `JavaScript` (или `TypeScript`, если нужен TS).
+# Aлгоритм создания и деплоя проекта на Vite с GitHub Pages
 
 ---
 
-## 3. Установка зависимостей
+## 1️⃣ Создание проекта на Vite и установка зависимостей
 
+1. Создаём новый проект через Vite:
+
+```bash
+npm create vite@latest my-project
+```
+
+- Выбираем `vanilla` или `vanilla-js` (если чистый JS), либо `vue/react` по
+  желанию.
+- Переходим в папку проекта:
+
+```bash
+cd my-project
+```
+
+2. Устанавливаем все зависимости:
+
+```bash
 npm install
+```
 
 ---
 
-## 4. Разработка
+## 2️⃣ Инициализация Git-репозитория
 
-npm run dev - Эта команда запускает локальный сервер разработки, прописанный в
-`package.json`. После запуска Vite выдаст ссылку, по которой можно открыть
-проект в браузере.
-
----
-
-## 5. Сборка и предпросмотр
-
-npm run build
-
-- Собирает проект для продакшена.
-- Vite оптимизирует и бандлит файлы, минимизирует JS/CSS и помещает результат в
-  папку `dist/`.
-
-npm run preview
-
-- Запускает локальный сервер, который отдаёт содержимое уже собранной папки
-  `dist/`.
-- Позволяет проверить, как будет выглядеть и работать продакшн-сборка (пути,
-  ресурсы, минификация).
-- Это не замена полноценному хостингу, но удобно для локальной проверки перед
-  отправкой на сервер.
-
----
-
-## 6. Инициализация Git-репозитория
-
-В терминале в папке проекта:
+1. Инициализируем локальный репозиторий:
 
 ```bash
-# инициализировать репозиторий
 git init
-
-# добавить все файлы
-git add .
-
-# первый коммит
-git commit -m "Initial commit"
 ```
 
----
-
-## 7. Создание удалённого репозитория на GitHub
-
-1. Перейди на [github.com](https://github.com) → нажми **New repository**.
-2. Введи имя репозитория (например, `my-app`) → нажми **Create repository**.
-
-GitHub выдаст URL для клонирования/подключения, например:
-
-```
-https://github.com/USERNAME/my-app.git
-git@github.com:USERNAME/my-app.git
-```
-
----
-
-## 8. Связь локального репозитория с удалённым и отправка изменений
+2. Добавляем все файлы:
 
 ```bash
-# если хочешь использовать main как основную ветку
+git add .
+```
+
+3. Первый коммит:
+
+```bash
+git commit -m "Initial commit: create project with Vite"
+```
+
+- **Первый коммит** содержит исходники проекта, package.json, node_modules не
+  обязательно пушить.
+
+4. Переименовываем ветку в main (если нужно):
+
+```bash
 git branch -M main
+```
 
-# добавить remote (замени URL на тот, что дал GitHub)
-git remote add origin https://github.com/USERNAME/my-app.git
+---
 
-# отправить текущую ветку в удалённый репозиторий
+## 3️⃣ Создание удалённого репозитория на GitHub
+
+1. Создаём репозиторий на GitHub
+
+2. Не добавляем README, чтобы не было конфликтов с локальным репозиторием.
+
+---
+
+## 4️⃣ Связь локального репозитория с удалённым и отправка изменений
+
+1. Добавляем remote:
+
+```bash
+git remote add origin https://github.com/USERNAME/название проекта.git
+```
+
+2. Пушим ветку main:
+
+```bash
 git push -u origin main
 ```
 
----
-
-## 9. Деплой на GitHub Pages
-
-- Можно использовать [gh-pages](https://www.npmjs.com/package/gh-pages) или
-  GitHub Actions для автоматического деплоя.
+- После этого локальный репозиторий связан с GitHub.
 
 ---
 
-## Дополнительно
+## 5️⃣ Создание vite.config.js
 
-- Все команды выполняются из терминала в папке проекта.
+- **Файл находится в ветке main**, на уровне package.json.
+- Пример для многостраничного проекта (MPA) без `base`:
+
+```js
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
+
+export default defineConfig({
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        colorSwitcher: resolve(__dirname, '01-color-switcher.html'),
+        countdownTimer: resolve(__dirname, '02-timer.html'),
+        promiseGenerator: resolve(__dirname, '03-promises.html'),
+      },
+    },
+  },
+});
+```
+
+> Пока **не используем base**, чтобы GitHub Pages правильно раздавал сайт из
+> корня ветки gh-pages.
+
+---
+
+## 6️⃣ Настройка npm-скрипта для деплоя
+
+1. Устанавливаем пакет `gh-pages`:
+
+```bash
+npm install --save-dev gh-pages
+```
+
+2. В `package.json` добавляем скрипт:
+
+```json
+"scripts": {
+  "deploy": "gh-pages -d dist"
+}
+```
+
+- Скрипт берёт содержимое папки `dist/` и пушит в ветку `gh-pages`.
+
+---
+
+## 7️⃣ Алгоритм работы с проектом локально и на GitHub Pages
+
+1. Работаем **на ветке main**.
+2. Вносим изменения в исходники (HTML, JS, CSS, src/).
+3. Проверяем локально:
+
+```bash
+npm run dev      # быстрый dev-сервер
+npm run preview  # проверка сборки
+```
+
+4. Когда готово — собираем проект:
+
+```bash
+npm run build
+```
+
+- Появляется папка `dist/` с готовыми к публикации файлами.
+
+5. Деплой на GitHub Pages:
+
+```bash
+npm run deploy
+```
+
+- Содержимое dist пушится в ветку **gh-pages**.
+- GitHub Pages автоматически отдаёт сайт с этой ветки.
+
+---
+
+## 8️⃣ Ветки и коммиты
+
+- **main** — исходники проекта + vite.config.js + npm-библиотеки.
+- **gh-pages** — только готовая сборка (dist).
+
+### Пример коммитов:
+
+1. **Первый коммит**
+
+```text
+Initial commit: create project with Vite
+```
+
+- В main, содержит исходники проекта.
+
+2. **Добавление vite.config.js**
+
+```text
+feat: add vite.config.js for multi-page support
+```
+
+- В main, чтобы сборка могла создать MPA.
+
+3. **Деплой dist на GitHub Pages**
+
+```text
+chore: deploy dist to gh-pages
+```
+
+- Ветка gh-pages создаётся автоматически при `npm run deploy`.
+
+4. **Изменения исходников**
+
+```text
+feat: update timer and style improvements
+```
+
+- В main, затем снова сборка и деплой.
+
+---
+
+## 9️⃣ Основные моменты
+
+- **Исходники не публикуются напрямую на Pages** — только через dist.
+- **gh-pages** не объединяем с main, это отдельная ветка для публикации.
+- npm-библиотеки (`notifyx`, `flatpickr`) работают только после сборки Vite.
+- Добавлять новые страницы MPA — через `rollupOptions.input` в vite.config.js.
 
 ## Структура проекта
 
@@ -240,24 +346,3 @@ CSS, отступы, шрифты, форматирование.
 `chore: add comments and minor code cleanup`
 
 ---
-
-## **_Последующие коммиты_**
-
-```bash
-# 1️⃣ Проверяем статус файлов
-git status
-
-# 2️⃣ Добавление всех файлов проекта в staging area
-git add .
-
-# 3️⃣ Создание коммита с описанием изменений
-git commit -m "название коммита"
-
-
-# перед git push убедись, что ты добавила удалённый репозиторий командой:
-# git remote add origin <URL_репозитория>
-# и что используешь правильную ветку (main или master)
-
-# 4️⃣ Отправка изменений на удалённый репозиторий.
-git push
-```
