@@ -119,36 +119,6 @@ git push -u origin main
 
 - Все команды выполняются из терминала в папке проекта.
 
-## Многостраничный проект в Vite
-
-```bash
-# По умолчанию Vite создаёт одностраничное приложение (SPA), где в сборку попадает только index.html. Если в корне проекта есть несколько HTML-файлов, они не будут работать после сборки и при vite preview, так как сервер отдаёт только index.html и связанные с ним ресурсы.
-
-Чтобы сделать проект многостраничным (MPA, Multi-Page Application), нужно создать файл vite.config.js в корне проекта (на том же уровне, что и package.json и index.html) и явно указать все HTML-файлы:
-
-#vite.config.js:
-import { defineConfig } from 'vite'
-import { resolve } from 'path'
-
-export default defineConfig({
-
-
-  build: {
-    rollupOptions: {
-      input: {
-              #// Главная страница
-        main: resolve(__dirname, 'index.html'),
-
-            #// Примеры дополнительных страниц
-        colorSwitcher: resolve(__dirname, '01-color-switcher.html'),
-        countdownTimer: resolve(__dirname, '02-timer.html'),
-        promiseGenerator: resolve(__dirname, '03-promises.html'),
-      }
-    }
-  }
-})
-```
-
 ## Структура проекта
 
 ```
